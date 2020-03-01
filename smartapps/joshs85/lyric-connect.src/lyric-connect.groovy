@@ -102,6 +102,13 @@ def initialize() {
 }
 
 def authPage() {
+	def AuthReset = settings.ResetAuth
+	if(AuthReset) {
+        log.info "Resetting authentication"
+    	atomicState.accessToken = null
+        atomicState.authToken = null
+        AuthReset = false
+    }
     if(!atomicState.accessToken) {
         // the createAccessToken() method will store the access token in atomicState.accessToken
         createAccessToken()
@@ -129,6 +136,7 @@ def authPage() {
                 section("") {
                     paragraph "Tap below to log in to the Honeywell service and authorize SmartThings access. Be sure to scroll down on page 2 and press the 'Allow' button."
                     href url:redirectUrl, style:"embedded", required:true, title:"Honeywell", description:description
+                    input name: "ResetAuth", title: "Un Check This.", type: "bool", value: false, required: false
                 }
             }
         }
@@ -139,6 +147,7 @@ def authPage() {
             section("") {
                 paragraph "Tap below to see the list of locations available in your Honeywell account and select the ones you want to connect to SmartThings."
                 input(name: "Locations", title:"Select Your Location(s)", type: "enum", required:true, multiple:true, description: "Tap to choose", metadata:[values:locations])
+                input name: "ResetAuth", title: "Check this and save to re authenticate and add new devices.", type: "bool", defaultValue: false, required: false
             }
         }
     }
